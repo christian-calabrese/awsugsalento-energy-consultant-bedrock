@@ -1,0 +1,27 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"logs:CreateLogGroup",
+				"logs:CreateLogStream",
+				"logs:PutLogEvents"
+			],
+			"Resource": "arn:*:logs:*:*:*"
+		},
+		{
+			"Resource": ["arn:aws:dynamodb:us-east-1:920959257265:table/dealers_tariff", "arn:aws:dynamodb:us-east-1:920959257265:table/bills"],
+			"Action": [
+				"dynamodb:BatchGetItem",
+				"dynamodb:GetItem",
+				"dynamodb:BatchWriteItem",
+				"dynamodb:DeleteItem",
+				"dynamodb:PutItem",
+                "dynamodb:Scan",
+				"dynamodb:Query"
+			],
+			"Effect": "Allow"
+		}
+	]
+}

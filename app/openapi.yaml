@@ -1,0 +1,182 @@
+openapi: "3.0.1"
+info:
+  title: "energy_consultant"
+  version: "1.0"
+servers:
+  - url: "https://7qvx3k3htf.execute-api.us-east-1.amazonaws.com/{basePath}"
+    variables:
+      basePath:
+        default: "api"
+paths:
+  /bills/{pod}:
+    get:
+      description: This API allows to list all the bills of a certain POD indicated by the specified pod
+      parameters:
+        - name: "pod"
+          in: "path"
+          required: true
+          description: The POD for which to list the bills information
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Bill"
+    post:
+      description: This API allows to add the consumption information of a certain bill for a certain POD in a certain year and month
+      parameters:
+        - name: "pod"
+          in: "path"
+          required: true
+          description: The POD for which to add the bill information
+          schema:
+            type: "string"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - year_month_from
+                - f1
+                - f2
+                - f3
+              properties:
+                year_month_from:
+                  type: "string"
+                  description: The year and month for which the POD is adding the bill information. An example for February 2024 is 2024-02
+                  example: "2024-02"
+                f1:
+                  type: number
+                  format: float
+                  example: 121.44
+                  description: The consumption in the f1 time slot
+                f2:
+                  type: number
+                  format: float
+                  example: 90.31
+                  description: The consumption in the f2 time slot
+                f3:
+                  type: number
+                  format: float
+                  example: 34.22
+                  description: The consumption in the f3 time slot
+
+      responses:
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  /bills/{pod}/{year_month_from}:
+    get:
+      description: This API allows to get the bill of a certain POD indicated by the query_parameter pod and for a certain year month indicated by the query_parameter year_month_from
+      parameters:
+        - name: "pod"
+          in: "path"
+          required: true
+          description: The POD for which to get the bill information
+          schema:
+            type: "string"
+        - name: "year_month_from"
+          in: "path"
+          required: true
+          description: The year and month to which the bill information relate. An example for February 2024 is 2024-02
+          schema:
+            type: "string"
+          example: "2024-02"
+      responses:
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bill"
+  /tariffs:
+    get:
+      description: This API allows to list the information of all suppliers tariffs
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Used to limit the number of results. If top tariffs are requested, it's a good practice to limit the call to a small number
+          example: 3
+          schema:
+            type: "number"
+        - name: "order"
+          in: query
+          required: false
+          description: Used to order the tariffs. Tariffs are ordered by average cost. If cheapest tariffs are requested, set it to asc, otherwise if most expensive are requested, set it to desc
+          example: asc
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Tariff"
+
+components:
+  schemas:
+    Empty:
+      title: "Empty Schema"
+      type: "object"
+    Tariff:
+      title: "Tariff Schema"
+      properties:
+        name:
+          description: The name of the energy supplier that supplies this tariff
+          type: "string"
+        f1:
+          type: "number"
+          example: 0.22
+          description: The cost per kwh in the f1 time slot
+        f2:
+          type: "number"
+          example: 0.18
+          description: The cost per kwh in the f2 time slot
+        f3:
+          type: "number"
+          example: 0.18
+          description: The cost per kwh in the f3 time slot
+        average:
+          type: "number"
+          example: 0.19
+          description: The average cost among f1, f2 and f3 costs
+    Bill:
+      title: "Bill Schema"
+      properties:
+        pod:
+          description: The unique identifier of the POD for which to add the bill information
+          type: "string"
+        year_month_from:
+          type: "string"
+          description: The year and month to which the bill information relate. An example for February 2024 is 2024-02
+          example: "2024-02"
+        f1:
+          type: "number"
+          example: 121.44
+          description: The consumption in the f1 time slot
+        f2:
+          type: "number"
+          example: 90.31
+          description: The consumption in the f2 time slot
+        f3:
+          type: "number"
+          example: 34.22
+          description: The consumption in the f3 time slot
+        total:
+          type: "number"
+          example: 245.86
+          description: The total consumption as the sum of f1, f2 and f3
