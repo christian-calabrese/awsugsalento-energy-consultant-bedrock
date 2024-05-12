@@ -25,7 +25,7 @@ def lambda_handler(event, context):
     parameters = {
         param["name"]: param["value"] for param in event.get("parameters", [])
     }
-    url = os.getenv("API_GW_STAGE_URL") + path
+    url = os.getenv("API_GW_STAGE_URL", "https://ainpkdsev6.execute-api.us-east-1.amazonaws.com/api") + path
 
     path_params = dict()
     query_params = dict()
